@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://worldwar.github.io/sitemap.xml 
