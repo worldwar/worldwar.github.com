@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://worldwar.github.io/atom.xml" rel="self"/>
   <link href="http://worldwar.github.io/"/>
-  <updated>2013-09-11T17:45:10+08:00</updated>
+  <updated>2013-10-31T22:23:15+08:00</updated>
   <id>http://worldwar.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,73 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Daily Work]]></title>
+    <link href="http://worldwar.github.io/blog/2013/10/31/daily-work/"/>
+    <updated>2013-10-31T19:32:00+08:00</updated>
+    <id>http://worldwar.github.io/blog/2013/10/31/daily-work</id>
+    <content type="html"><![CDATA[<p>Today I continue to build my web site. <br/>
+What I have done are:</p>
+
+<ul>
+<li>add view articles function</li>
+</ul>
+
+
+<p>I met some problems:</p>
+
+<ul>
+<li>object type convert between mysql and java</li>
+<li>Chinese garbled</li>
+<li>environment variable setting in gradle</li>
+</ul>
+
+
+<h3>Object type convert between mysql and java</h3>
+
+<p>I use MyBatis to generate Java Object from mysql:</p>
+
+<pre><code>@Select(
+    "SELECT time FROM someTable"
+)
+@Results( value = {
+    @Result(property = "time")
+})
+public List&lt;SomeObject&gt; selectAll();
+</code></pre>
+
+<p>In mysql, the somaTable has a column named time, which type is DATETIME. Also, in Java code, SomeObject has a field named time, which type is Calendar. The code here is trying to convert the mysql&rsquo;s time value to an Calendar instance. This method is failed because MyBatis doesn&rsquo;t know how to do the convert. In the MyBatis implementation, there must be some way to tell it how to do convert. If not, how can it convert mysql&rsquo;s INT type value to Java&rsquo;s Long Object, VARCHAR type to String Object?</p>
+
+<p>I google it and finally get it. I should implement the TypeHandlerCallback interface, and override the setParameter(), getResult(), and valueOf() methods. That means that for just doing the DATATIME-Calendar convert, I should write tons of code. I&rsquo;m too lazy to do that.</p>
+
+<p>So I change using java.util.Date instead of Calendar. It&rsquo;s OK!</p>
+
+<h3>Chinese garbled</h3>
+
+<p>When your website suffer the CJK (Chinese, Japapese, Korean) garbled problem, firstly, you should know where the problem occurs. Database or web server?</p>
+
+<p>For me, I found this problem when I tried to insert data into a table from console. Some of the field of that data contain chinese characters. So I search the internet, all the answers are to set all kinds of the character set of mysql to utf8. I checked my database, it had already been set to utf8. Then I wrote the insert sql statement in a text file, and executed it by &ldquo;. scripts/insert.sql&rdquo;, and then it inserted successfully. But I executed &ldquo;select * from someTable;&rdquo;, it showed the results with some Chinese garbled. Some people said that the DOS couldn&rsquo;t handle Chinese well, so I downloaded a mysql client &ldquo;Navicat for mysql&rdquo; to check the data. It&rsquo;s fine.</p>
+
+<p>So, the problem is the web server. I set the contentType of response before render jsp pages:</p>
+
+<pre><code>response.setContentType("text/html; charset=utf-8");
+</code></pre>
+
+<p>Restart the web server, and the page displayed normally!</p>
+
+<h3>Environment variables setting in gradle</h3>
+
+<p>I want to start jetty in debug mode, that means I should set some certain environment variable before starting jetty.</p>
+
+<p>I can do this:</p>
+
+<pre><code>set JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y
+</code></pre>
+
+<p>But every time I start debug jetty, I should do this, it&rsquo;s not good for my health. And I will probably forget this long value. Also, I don&rsquo;t want to set this as system environment variable, bacause I should set it again as soon as I change to another computer. The best way is to set the variable in build.gradle. But it seem to be impossible. Finally, I set it as system environment variable.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Words for Start]]></title>
